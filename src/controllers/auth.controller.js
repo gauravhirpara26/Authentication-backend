@@ -16,6 +16,17 @@ export async function register(req, res) {
     try {
         const { fullName, email, password } = req.body
 
+        // Input validation
+        if (!fullName || fullName.trim().length < 2) {
+            return res.status(400).json({ message: 'Full name must be at least 2 characters' })
+        }
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            return res.status(400).json({ message: 'Invalid email format' })
+        }
+        if (!password || password.length < 6) {
+            return res.status(400).json({ message: 'Password must be at least 6 characters' })
+        }
+
         const isAlreadyRegistered = await userModel.findOne({
             $or: [
                 { email }
@@ -24,7 +35,7 @@ export async function register(req, res) {
 
         if (isAlreadyRegistered) {
             return res.status(409).json({
-                message: 'username and email already exists'
+                message: 'Email already registered'
             })
         }
         
@@ -47,7 +58,7 @@ export async function register(req, res) {
         const htmlContent = await ejs.renderFile(templatePath, { fullName: user.fullName, otp: otp })
 
         await transporter.sendMail({
-            from: `My App <${email}>`,
+            from: `My App <${SenderEmail}>`,
             to: user.email,
             subject: 'Verify Your Account - OTP Code',
             html: htmlContent
