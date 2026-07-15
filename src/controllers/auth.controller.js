@@ -1,16 +1,16 @@
 import userModel from "../models/user.model.js";
-import crypto from 'crypto'
 import Transporter from '../config/emailConfig.js'
 import dotenv from 'dotenv'
 import path from "path";
 import ejs from 'ejs'
+import bcrypt from 'bcrypt'
 dotenv.config()
 
 const service = 'gmail'
-const email = process.env.EMAIL_ID
+const SenderEmail = process.env.EMAIL_ID
 const password = process.env.PASSWORD
 
-const transporter = Transporter(service, email, password)
+const transporter = Transporter(service, SenderEmail, password)
 
 export async function register(req, res) {
     try {
@@ -23,12 +23,13 @@ export async function register(req, res) {
         })
 
         if (isAlreadyRegistered) {
-            res.status(409).json({
+            return res.status(409).json({
                 message: 'username and email already exists'
             })
         }
-
-        const hashedPassword = crypto.createHash('sha256').update(password).digest('hex')
+        
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt)
 
         const otp = Math.floor(100000 + Math.random() * 900000).toString()
         const otpExpires = new Date(Date.now() + 10 * 60 * 1000)
@@ -42,8 +43,8 @@ export async function register(req, res) {
             isVerified: false
         })
 
-        const templatePath = path.join(process.cwd(), 'templates', 'verify_email.ejs')
-        const htmlContent = await ejs.render(templatePath, { fullName: user.fullName, otp: otp })
+        const templatePath = path.join(process.cwd(), 'src', 'templates', 'verify_email.ejs')
+        const htmlContent = await ejs.renderFile(templatePath, { fullName: user.fullName, otp: otp })
 
         await transporter.sendMail({
             from: `My App <${email}>`,
@@ -57,7 +58,7 @@ export async function register(req, res) {
             email: user.email
         })
     } catch (error) {
-        console.error('Registration Error : ', error)
+        console.log('Registration Error : ', error)
         res.status(500).json({ message: 'Internal Server Error ' })
     }
 }
