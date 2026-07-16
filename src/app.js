@@ -18,8 +18,10 @@ const limiter = rateLimit({
 app.use('/api', limiter)
 
 // Strict CORS
+const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/$/, '')
 const allowedOrigins = [
-    process.env.FRONTEND_URL
+    frontendUrl,
+    'http://localhost:5173'
 ]
 
 const corsOptions = {

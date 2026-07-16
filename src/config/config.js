@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
-if(!process.env.MONGO_URI){
+if(!process.env.MONGO_URI_DEV){
     throw new Error('MONGO_URI not defined in enviornment variable')
 }
 if(!process.env.JWT_SECRET){
@@ -16,7 +16,7 @@ if(!process.env.PASSWORD){
 }
 
 const config = {
-    MONGO_URI: process.env.MONGO_URI,
+    MONGO_URI: process.env.MONGO_URI_DEV,
     JWT_SECRET:process.env.JWT_SECRET,
     EMAIL_SERVICE: process.env.EMAIL_SERVICE,
     EMAIL_ID: process.env.EMAIL_ID,

@@ -1,5 +1,5 @@
 const requiredEnvVars = [
-    'MONGO_URI',
+    'MONGO_URI_DEV',
     'JWT_SECRET',
     'EMAIL_ID',
     'PASSWORD'
