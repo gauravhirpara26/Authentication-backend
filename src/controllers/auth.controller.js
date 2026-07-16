@@ -27,11 +27,7 @@ export async function register(req, res) {
             return res.status(400).json({ message: 'Password must be at least 6 characters' })
         }
 
-        const isAlreadyRegistered = await userModel.findOne({
-            $or: [
-                { email }
-            ]
-        })
+        const isAlreadyRegistered = await userModel.findOne({email})
 
         if (isAlreadyRegistered) {
             return res.status(409).json({

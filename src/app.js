@@ -19,8 +19,7 @@ app.use('/api', limiter)
 
 // Strict CORS
 const allowedOrigins = [
-    'http://localhost:5173',
-    'https://authentication-psi-one.vercel.app'
+    process.env.FRONTEND_URL
 ]
 
 const corsOptions = {
@@ -33,7 +32,6 @@ const corsOptions = {
     },
     credentials: true
 }
-app.set('trust proxy', 1);
 app.use(cors(corsOptions))
 
 app.use(express.json())

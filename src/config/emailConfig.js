@@ -3,15 +3,13 @@ import nodemailer from 'nodemailer'
 function Transporter(service, email, password) {
     const Transporter = nodemailer.createTransport({
         host:'smtp.gmail.com',
-        port:587,
-        secure:false,
+        port:465,
+        secure:true,
         auth: {
             user: email,
             pass: password
         },
-        tls:{
-            rejectUnauthorized:false
-        }
+        connectionTimeout: 10000
     })
 
     return Transporter
