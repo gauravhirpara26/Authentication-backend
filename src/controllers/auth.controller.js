@@ -69,8 +69,8 @@ export async function register(req, res) {
             email: user.email
         })
     } catch (error) {
-        console.log('Registration Error : ', error)
-        res.status(500).json({ message: 'Internal Server Error ' })
+        console.error('Registration Error:', error)
+        res.status(500).json({ message: 'Internal Server Error' })
     }
 }
 
