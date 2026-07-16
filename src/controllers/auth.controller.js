@@ -1,16 +1,16 @@
 import userModel from "../models/user.model.js";
 import Transporter from '../config/emailConfig.js'
-import dotenv from 'dotenv'
 import path from "path";
 import ejs from 'ejs'
 import bcrypt from 'bcrypt'
-dotenv.config()
 
-const service = 'gmail'
+const service = process.env.EMAIL_SERVICE || 'gmail'
+
 const SenderEmail = process.env.EMAIL_ID
 const password = process.env.PASSWORD
 
 const transporter = Transporter(service, SenderEmail, password)
+
 
 export async function register(req, res) {
     try {
