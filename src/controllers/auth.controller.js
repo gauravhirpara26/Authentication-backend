@@ -27,14 +27,14 @@ export async function register(req, res) {
             return res.status(400).json({ message: 'Password must be at least 6 characters' })
         }
 
-        const isAlreadyRegistered = await userModel.findOne({email})
+        const isAlreadyRegistered = await userModel.findOne({ email })
 
         if (isAlreadyRegistered) {
             return res.status(409).json({
                 message: 'Email already registered'
             })
         }
-        
+
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt)
 
@@ -70,3 +70,39 @@ export async function register(req, res) {
     }
 }
 
+export async function verifyEmail(req, res) {
+    try {
+        const { email, otp } = req.body
+
+        if (!email || !otp) {
+            return res.status(400).json({ message: 'Email and OTP are required' })
+        }
+
+        const user = await userModel.findOne({ email })
+
+        if (!user) {
+            return res.status(404).json({ message: 'User Not Found' })
+        }
+
+        if (user.isVerified) {
+            return res.status(400).json({ message: 'Email is Already Verified' })
+        }
+
+        if (user.otpExpires < Date.now()) {
+            return res.status(400).json({ message: 'OTP has expired. please request a new one' })
+        }
+        if (user.otp !== otp) {
+            return res.status(400).json({ message: 'Invalid Otp' })
+        }
+
+        user.isVerified = true
+        user.otp = undefined
+        user.otpExpires = undefined
+        await user.save()
+
+        return res.status(200).json({ message: 'Email verify Successfully', success: true })
+    } catch (error) {
+        console.error('Verify Email Error : ', error)
+        res.status(500).json({ message: 'Internal Server Error' })
+    }
+}
